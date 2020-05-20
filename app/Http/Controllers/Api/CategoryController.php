@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Category as ResourcesCategory;
 use App\Http\Resources\CategoryCollection;
 use App\Models\Category;
+use App\Models\Log;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -17,6 +18,13 @@ class CategoryController extends Controller
      */
     public function index()
     {
+        Log::create([
+            'title' => 'successfully loaded',
+            'model' => 'Category',
+            'name' => 'Category Listing',
+            'url' => '/category/',
+            'action' => 'listing'
+        ]);
         return response([
             'categories' => new CategoryCollection(Category::root()->orderByDesc('id')->get())
         ], 200);
@@ -49,6 +57,14 @@ class CategoryController extends Controller
 
         $category = Category::create($request->all());
 
+        Log::create([
+            'title' => 'successfully created',
+            'model' => 'Category',
+            'name' => $category->name,
+            'url' => '/category/'.$category->id .'/show',
+            'action' => 'create'
+        ]);
+
         return response([
             'message' => $category->name.' successfully created.',
         ], 201);
@@ -62,6 +78,14 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
+        Log::create([
+            'title' => 'successfully requested',
+            'model' => 'Category',
+            'name' => $category->name,
+            'url' => '/category/'.$category->id .'/show',
+            'action' => 'request'
+        ]);
+        
         return response([
             'category' => new ResourcesCategory($category),
         ], 200);
@@ -84,6 +108,14 @@ class CategoryController extends Controller
 
         $category->update($request->all());
 
+        Log::create([
+            'title' => 'successfully updated',
+            'model' => 'Category',
+            'name' => $category->name,
+            'url' => '/category/'.$category->id .'/show',
+            'action' => 'update'
+        ]);
+
         return response([
             'message' => $category->name.' successfully updated.',
         ], 200);
@@ -99,8 +131,16 @@ class CategoryController extends Controller
     {
         $category->toggleActive();
 
+        Log::create([
+            'title' => 'successfully ' . ($category->active ? 'activated' : 'inactivated'),
+            'model' => 'Category',
+            'name' => $category->name,
+            'url' => '/category/'.$category->id .'/show',
+            'action' => ($category->active ? 'active' : 'inactive')
+        ]);
+
         return response([
-            'message' => $category->name.' successfully '.($category->active ? 'activated' : 'deactivated').'.',
+            'message' => $category->name.' successfully '.($category->active ? 'activated' : 'inactivated').'.',
         ], 200);
     }
 
@@ -115,6 +155,14 @@ class CategoryController extends Controller
         $name = $category->name;
 
         $category->delete();
+
+        Log::create([
+            'title' => 'successfully deleted',
+            'model' => 'Category',
+            'name' => $name,
+            'url' => '/category',
+            'action' => 'delete'
+        ]);
 
         return response([
             'message' => $name.' successfully deleted.',
@@ -134,6 +182,14 @@ class CategoryController extends Controller
         ]);
 
         Category::destroy($request->categories);
+
+        Log::create([
+            'title' => 'successfully deleted',
+            'model' => 'Category',
+            'name' => 'Bulk Delete',
+            'url' => '/category',
+            'action' => 'delete'
+        ]);
 
         return response([
             'message' => 'Modules successfully deleted.',

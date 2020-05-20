@@ -26,6 +26,8 @@ class Category extends JsonResource
             'active' => $this->active,
             'created_at' => $this->created_at->diffForHumans(),
             'updated_at' => $this->updated_at->diffForHumans(),
+            'creator' => $this->creator,
+            'updater' => $this->updater,
         ];
 
         if ($this->children->count()) {
