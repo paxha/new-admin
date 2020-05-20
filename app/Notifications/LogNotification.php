@@ -65,7 +65,7 @@ class LogNotification extends Notification implements ShouldQueue
             $attachment->title($this->log->name, $this->log->url)
                        ->fields([
                             'Target Name' => $this->log->name,
-                            'Action' => $this->log->action . ($this->log->action === 'delete' or $this->log->action === 'inactive' ? ' :x:' : ''),
+                            'Action' => $this->log->action . (($this->log->action === 'delete' or $this->log->action === 'inactive') ? ' :x:' : ''),
                             'Action At' => $this->log->created_at,
                             'Action By' => $this->log->user->name,
                         ]);
