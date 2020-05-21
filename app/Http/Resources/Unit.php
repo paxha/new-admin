@@ -23,6 +23,7 @@ class Unit extends JsonResource
             'updated_at' => $this->updated_at->diffForHumans(),
             'creator' => $this->creator,
             'updater' => $this->updater,
+            'attributes' => $this->attributes
         ];
     }
 }

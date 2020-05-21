@@ -31,11 +31,11 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('unit/{unit}/delete', 'UnitController@destroy');
     Route::delete('units/delete', 'UnitController@destroyMany');
 
-    // Route::get('attributes', 'AttributeController@index');
-    // Route::post('attribute/create', 'AttributeController@store');
-    // Route::get('attribute/{attribute}/edit', 'AttributeController@edit');
-    // Route::put('attribute/{attribute}/update', 'AttributeController@update');
-    // Route::get('attribute/{attribute}/toggle-active', 'AttributeController@toggleActive');
-    // Route::delete('attribute/{attribute}/delete', 'AttributeController@destroy');
-    // Route::delete('attributes/delete', 'AttributeController@destroyMany');
+    Route::get('attributes', 'AttributeController@index');
+    Route::post('attribute/create', 'AttributeController@store');
+    Route::get('attribute/{attribute}/edit', 'AttributeController@edit');
+    Route::put('attribute/{attribute}/update', 'AttributeController@update');
+    Route::get('attribute/{attribute}/toggle-active', 'AttributeController@toggleActive');
+    Route::delete('attribute/{attribute}/delete', 'AttributeController@destroy');
+    Route::delete('attributes/delete', 'AttributeController@destroyMany');
 });

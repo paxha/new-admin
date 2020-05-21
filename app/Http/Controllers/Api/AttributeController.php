@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Unit as ResourcesUnit;
-use App\Http\Resources\UnitCollection;
+use App\Http\Resources\Attribute as ResourcesAttribute;
+use App\Http\Resources\AttributeCollection;
+use App\Models\Attribute;
 use App\Models\Log;
-use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class UnitController extends Controller
+class AttributeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,8 +23,8 @@ class UnitController extends Controller
         try {
             Log::create([
                 'title' => 'successfully loaded',
-                'model' => 'Unit',
-                'name' => 'Unit Listing',
+                'model' => 'Attribute',
+                'name' => 'Attribute Listing',
                 'url' => '/',
                 'action' => 'listing',
             ]);
@@ -39,7 +39,7 @@ class UnitController extends Controller
         }
 
         return response([
-            'units' => new UnitCollection(Unit::orderByDesc('id')->get())
+            'attributes' => new AttributeCollection(Attribute::orderByDesc('id')->get())
         ], 200);
     }
 
@@ -52,20 +52,27 @@ class UnitController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255']
+            'name' => ['required', 'string', 'max:255'],
+            'type' => ['nullable', 'in:text,number,image'],
+            'categories' => ['nullable', 'array', 'min:1'],
+            'categories.*.id' => ['nullable', 'exists:categories,id'],
+            'units' => ['nullable', 'array', 'min:1'],
+            'units.*.id' => ['nullable', 'exists:units,id'],
         ]);
 
-        $trashed = Unit::onlyTrashed()->whereName($request->name)->first();
+        $trashed = Attribute::onlyTrashed()->whereName($request->name)->first();
 
         if ($trashed) {
             DB::beginTransaction();
             try {
                 $trashed->restore();
                 $trashed->update($request->all());
+                $trashed->categories()->sync($request->categories);
+                $trashed->units()->sync($request->units);
 
                 Log::create([
                     'title' => 'successfully restored',
-                    'model' => 'Unit',
+                    'model' => 'Attribute',
                     'name' => $trashed->name,
                     'url' => '/category/' . $trashed->id . '/show',
                     'action' => 'create'
@@ -87,12 +94,14 @@ class UnitController extends Controller
 
         DB::beginTransaction();
         try {
-            $unit = Unit::create($request->all());
+            $attribute = Attribute::create($request->all());
+            $attribute->categories()->sync($request->categories);
+            $attribute->units()->sync($request->units);
 
             Log::create([
                 'title' => 'successfully created',
-                'model' => 'Unit',
-                'name' => $unit->name,
+                'model' => 'Attribute',
+                'name' => $attribute->name,
                 'url' => '/',
                 'action' => 'create'
             ]);
@@ -107,24 +116,24 @@ class UnitController extends Controller
         }
 
         return response([
-            'message' => $unit->name . ' successfully created.',
+            'message' => $attribute->name . ' successfully created.',
         ], 201);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Unit $unit
+     * @param \App\Models\Attribute $attribute
      * @return \Illuminate\Http\Response
      */
-    public function edit(Unit $unit)
+    public function edit(Attribute $attribute)
     {
         DB::beginTransaction();
         try {
             Log::create([
                 'title' => 'successfully requested',
-                'model' => 'Unit',
-                'name' => $unit->name,
+                'model' => 'Attribute',
+                'name' => $attribute->name,
                 'url' => '/',
                 'action' => 'request'
             ]);
@@ -139,7 +148,7 @@ class UnitController extends Controller
         }
 
         return response([
-            'unit' => new ResourcesUnit($unit),
+            'attribute' => new ResourcesAttribute($attribute),
         ], 200);
     }
 
@@ -147,23 +156,30 @@ class UnitController extends Controller
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Unit $unit
+     * @param \App\Models\Attribute $attribute
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Unit $unit)
+    public function update(Request $request, Attribute $attribute)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255']
+            'name' => ['required', 'string', 'max:255'],
+            'type' => ['nullable', 'in:text,number,image'],
+            'categories' => ['nullable', 'array', 'min:1'],
+            'categories.*.id' => ['nullable', 'exists:categories,id'],
+            'units' => ['nullable', 'array', 'min:1'],
+            'units.*.id' => ['nullable', 'exists:units,id'],
         ]);
 
         DB::beginTransaction();
         try {
-            $unit->update($request->all());
+            $attribute->update($request->all());
+            $attribute->categories()->sync($request->categories);
+            $attribute->units()->sync($request->units);
 
             Log::create([
                 'title' => 'successfully updated',
-                'model' => 'Unit',
-                'name' => $unit->name,
+                'model' => 'Attribute',
+                'name' => $attribute->name,
                 'url' => '/',
                 'action' => 'update'
             ]);
@@ -178,28 +194,28 @@ class UnitController extends Controller
         }
 
         return response([
-            'message' => $unit->name . ' successfully updated.',
+            'message' => $attribute->name . ' successfully updated.',
         ], 200);
     }
 
     /**
      * Toggle active the specified resource in storage.
      *
-     * @param \App\Models\Unit $unit
+     * @param \App\Models\Attribute $attribute
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
-    public function toggleActive(Unit $unit)
+    public function toggleActive(Attribute $attribute)
     {
         DB::beginTransaction();
         try {
-            $unit->toggleActive();
+            $attribute->toggleActive();
 
             Log::create([
-                'title' => 'successfully ' . ($unit->active ? 'activated' : 'inactivated'),
-                'model' => 'Unit',
-                'name' => $unit->name,
+                'title' => 'successfully ' . ($attribute->active ? 'activated' : 'inactivated'),
+                'model' => 'Attribute',
+                'name' => $attribute->name,
                 'url' => '/',
-                'action' => ($unit->active ? 'active' : 'inactive')
+                'action' => ($attribute->active ? 'active' : 'inactive')
             ]);
 
             DB::commit();
@@ -212,27 +228,27 @@ class UnitController extends Controller
         }
 
         return response([
-            'message' => $unit->name . ' successfully ' . ($unit->active ? 'activated' : 'inactivated') . '.',
+            'message' => $attribute->name . ' successfully ' . ($attribute->active ? 'activated' : 'inactivated') . '.',
         ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\Unit $unit
+     * @param \App\Models\Attribute $attribute
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Unit $unit)
+    public function destroy(Attribute $attribute)
     {
-        $name = $unit->name;
+        $name = $attribute->name;
 
         DB::beginTransaction();
         try {
-            $unit->delete();
+            $attribute->delete();
 
             Log::create([
                 'title' => 'successfully deleted',
-                'model' => 'Unit',
+                'model' => 'Attribute',
                 'name' => $name,
                 'url' => '/',
                 'action' => 'delete'
@@ -261,16 +277,16 @@ class UnitController extends Controller
     public function destroyMany(Request $request)
     {
         $request->validate([
-            'units.*' => ['required', 'exists:units,id'],
+            'attributes.*' => ['required', 'exists:attributes,id'],
         ]);
 
         DB::beginTransaction();
         try {
-            Unit::destroy($request->units);
+            Attribute::destroy($request->attributes);
 
             Log::create([
                 'title' => 'successfully deleted',
-                'model' => 'Unit',
+                'model' => 'Attribute',
                 'name' => 'Bulk Delete',
                 'url' => '/',
                 'action' => 'delete'
@@ -286,7 +302,7 @@ class UnitController extends Controller
         }
 
         return response([
-            'message' => 'units successfully deleted.',
+            'message' => 'attributes successfully deleted.',
         ], 204);
     }
 }

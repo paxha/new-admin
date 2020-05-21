@@ -26,7 +26,7 @@ class Category extends Model
         parent::boot();
 
         self::updating(function ($model) {
-            if (! $model->active) {
+            if (!$model->active) {
                 foreach ($model->children as $child) {
                     $child->active = false;
                     $child->save();
@@ -41,6 +41,13 @@ class Category extends Model
 
         self::deleting(function ($model) {
             $model->children()->delete();
+
+            $model->attributes()->detach();
         });
+    }
+
+    public function attributes()
+    {
+        return $this->belongsToMany(Attribute::class);
     }
 }

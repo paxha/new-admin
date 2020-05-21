@@ -18,4 +18,18 @@ class Unit extends Model
     protected $guarded = [
         'active',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        self::deleting(function ($model) {
+            $model->attributes()->detach();
+        });
+    }
+
+    public function attributes()
+    {
+        return $this->belongsToMany(Attribute::class);
+    }
 }
