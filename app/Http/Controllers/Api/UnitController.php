@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Category as ResourcesCategory;
-use App\Http\Resources\CategoryCollection;
-use App\Models\Category;
+use App\Http\Resources\Unit as ResourcesUnit;
+use App\Http\Resources\UnitCollection;
 use App\Models\Log;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CategoryController extends Controller
+class UnitController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,9 +23,9 @@ class CategoryController extends Controller
         try {
             Log::create([
                 'title' => 'successfully loaded',
-                'model' => 'Category',
-                'name' => 'Category Listing',
-                'url' => '/category/',
+                'model' => 'Unit',
+                'name' => 'Unit Listing',
+                'url' => '/',
                 'action' => 'listing',
             ]);
 
@@ -39,7 +39,7 @@ class CategoryController extends Controller
         }
 
         return response([
-            'categories' => new CategoryCollection(Category::root()->orderByDesc('id')->get())
+            'units' => new UnitCollection(Unit::orderByDesc('id')->get())
         ], 200);
     }
 
@@ -52,12 +52,10 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'category_id' => ['nullable', 'exists:categories,id'],
-            'name' => ['required', 'string', 'max:255'],
-            'icon' => ['nullable', 'string', 'max:255'],
+            //
         ]);
 
-        $trashed = Category::onlyTrashed()->whereName($request->name)->first();
+        $trashed = Unit::onlyTrashed()->whereName($request->name)->first();
 
         if ($trashed) {
             DB::beginTransaction();
@@ -67,7 +65,7 @@ class CategoryController extends Controller
 
                 Log::create([
                     'title' => 'successfully restored',
-                    'model' => 'Category',
+                    'model' => 'Unit',
                     'name' => $trashed->name,
                     'url' => '/category/' . $trashed->id . '/show',
                     'action' => 'create'
@@ -89,13 +87,13 @@ class CategoryController extends Controller
 
         DB::beginTransaction();
         try {
-            $category = Category::create($request->all());
+            $unit = Unit::create($request->all());
 
             Log::create([
                 'title' => 'successfully created',
-                'model' => 'Category',
-                'name' => $category->name,
-                'url' => '/category/' . $category->id . '/show',
+                'model' => 'Unit',
+                'name' => $unit->name,
+                'url' => '/',
                 'action' => 'create'
             ]);
 
@@ -109,25 +107,25 @@ class CategoryController extends Controller
         }
 
         return response([
-            'message' => $category->name . ' successfully created.',
+            'message' => $unit->name . ' successfully created.',
         ], 201);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param Category $category
+     * @param \App\Models\Unit $unit
      * @return \Illuminate\Http\Response
      */
-    public function edit(Category $category)
+    public function edit(Unit $unit)
     {
         DB::beginTransaction();
         try {
             Log::create([
                 'title' => 'successfully requested',
-                'model' => 'Category',
-                'name' => $category->name,
-                'url' => '/category/' . $category->id . '/show',
+                'model' => 'Unit',
+                'name' => $unit->name,
+                'url' => '/',
                 'action' => 'request'
             ]);
 
@@ -141,7 +139,7 @@ class CategoryController extends Controller
         }
 
         return response([
-            'category' => new ResourcesCategory($category),
+            'unit' => new ResourcesUnit($unit),
         ], 200);
     }
 
@@ -149,26 +147,24 @@ class CategoryController extends Controller
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param Category $category
+     * @param \App\Models\Unit $unit
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Unit $unit)
     {
         $request->validate([
-            'parent_id' => ['nullable', 'exists:categories,id'],
-            'name' => ['required', 'string', 'max:255'],
-            'icon' => ['nullable', 'string', 'max:255'],
+            //
         ]);
 
         DB::beginTransaction();
         try {
-            $category->update($request->all());
+            $unit->update($request->all());
 
             Log::create([
                 'title' => 'successfully updated',
-                'model' => 'Category',
-                'name' => $category->name,
-                'url' => '/category/' . $category->id . '/show',
+                'model' => 'Unit',
+                'name' => $unit->name,
+                'url' => '/',
                 'action' => 'update'
             ]);
 
@@ -182,28 +178,28 @@ class CategoryController extends Controller
         }
 
         return response([
-            'message' => $category->name . ' successfully updated.',
+            'message' => $unit->name . ' successfully updated.',
         ], 200);
     }
 
     /**
      * Toggle active the specified resource in storage.
      *
-     * @param Category $category
+     * @param \App\Models\Unit $unit
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
-    public function toggleActive(Category $category)
+    public function toggleActive(Unit $unit)
     {
         DB::beginTransaction();
         try {
-            $category->toggleActive();
+            $unit->toggleActive();
 
             Log::create([
-                'title' => 'successfully ' . ($category->active ? 'activated' : 'inactivated'),
-                'model' => 'Category',
-                'name' => $category->name,
-                'url' => '/category/' . $category->id . '/show',
-                'action' => ($category->active ? 'active' : 'inactive')
+                'title' => 'successfully ' . ($unit->active ? 'activated' : 'inactivated'),
+                'model' => 'Unit',
+                'name' => $unit->name,
+                'url' => '/',
+                'action' => ($unit->active ? 'active' : 'inactive')
             ]);
 
             DB::commit();
@@ -216,30 +212,29 @@ class CategoryController extends Controller
         }
 
         return response([
-            'message' => $category->name . ' successfully ' . ($category->active ? 'activated' : 'inactivated') . '.',
+            'message' => $unit->name . ' successfully ' . ($unit->active ? 'activated' : 'inactivated') . '.',
         ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param Category $category
+     * @param \App\Models\Unit $unit
      * @return \Illuminate\Http\Response
-     * @throws \Exception
      */
-    public function destroy(Category $category)
+    public function destroy(Unit $unit)
     {
-        $name = $category->name;
+        $name = $unit->name;
 
         DB::beginTransaction();
         try {
-            $category->delete();
+            $unit->delete();
 
             Log::create([
                 'title' => 'successfully deleted',
-                'model' => 'Category',
+                'model' => 'Unit',
                 'name' => $name,
-                'url' => '/category',
+                'url' => '/',
                 'action' => 'delete'
             ]);
 
@@ -251,7 +246,6 @@ class CategoryController extends Controller
                 'message' => $exception->getMessage(),
             ], 500);
         }
-
 
         return response([
             'message' => $name . ' successfully deleted.',
@@ -267,18 +261,18 @@ class CategoryController extends Controller
     public function destroyMany(Request $request)
     {
         $request->validate([
-            'categories.*' => ['required', 'exists:categories,id'],
+            'units.*' => ['required', 'exists:units,id'],
         ]);
 
         DB::beginTransaction();
         try {
-            Category::destroy($request->categories);
+            Unit::destroy($request->units);
 
             Log::create([
                 'title' => 'successfully deleted',
-                'model' => 'Category',
+                'model' => 'Unit',
                 'name' => 'Bulk Delete',
-                'url' => '/category',
+                'url' => '/',
                 'action' => 'delete'
             ]);
 
@@ -291,9 +285,8 @@ class CategoryController extends Controller
             ], 500);
         }
 
-
         return response([
-            'message' => 'Categories successfully deleted.',
+            'message' => 'units successfully deleted.',
         ], 204);
     }
 }

@@ -3,20 +3,39 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::post('login', 'Api\UserController@login');
+Route::post('login', 'UserController@login');
 
-Route::get('logout', 'Api\UserController@logout');
+Route::get('logout', 'UserController@logout');
 
 Route::middleware('auth:api')->group(function () {
-    Route::get('user', 'Api\UserController@user');
-    
-    Route::get('modules', 'Api\ModuleController@index');
-    
-    Route::get('categories', 'Api\CategoryController@index');
-    Route::post('category/create', 'Api\CategoryController@store');
-    Route::get('category/{category}/edit', 'Api\CategoryController@edit');
-    Route::put('category/{category}/update', 'Api\CategoryController@update');
-    Route::get('category/{category}/toggle-active', 'Api\CategoryController@toggleActive');
-    Route::delete('category/{category}/delete', 'Api\CategoryController@destroy');
-    Route::delete('categories/delete', 'Api\CategoryController@destroyMany');
+    Route::get('user', 'UserController@user');
+
+    Route::get('modules', 'ModuleController@index');
+
+    Route::get('categories', 'CategoryController@index');
+    Route::post('category/create', 'CategoryController@store');
+    Route::get('category/{category}/edit', 'CategoryController@edit');
+    Route::put('category/{category}/update', 'CategoryController@update');
+    Route::get('category/{category}/toggle-active', 'CategoryController@toggleActive');
+    Route::delete('category/{category}/delete', 'CategoryController@destroy');
+    Route::delete('categories/delete', 'CategoryController@destroyMany');
+
+    /*
+     * Unit Apis
+     * */
+    Route::get('units', 'UnitController@index');
+    Route::post('unit/create', 'UnitController@store');
+    Route::get('unit/{unit}/edit', 'UnitController@edit');
+    Route::put('unit/{unit}/update', 'UnitController@update');
+    Route::get('unit/{unit}/toggle-active', 'UnitController@toggleActive');
+    Route::delete('unit/{unit}/delete', 'UnitController@destroy');
+    Route::delete('units/delete', 'UnitController@destroyMany');
+
+    // Route::get('attributes', 'AttributeController@index');
+    // Route::post('attribute/create', 'AttributeController@store');
+    // Route::get('attribute/{attribute}/edit', 'AttributeController@edit');
+    // Route::put('attribute/{attribute}/update', 'AttributeController@update');
+    // Route::get('attribute/{attribute}/toggle-active', 'AttributeController@toggleActive');
+    // Route::delete('attribute/{attribute}/delete', 'AttributeController@destroy');
+    // Route::delete('attributes/delete', 'AttributeController@destroyMany');
 });

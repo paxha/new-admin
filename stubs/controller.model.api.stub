@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace {{ namespace }};
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Category as ResourcesCategory;
-use App\Http\Resources\CategoryCollection;
-use App\Models\Category;
+use {{ namespacedModel }};
+use {{ rootNamespace }}Http\Controllers\Controller;
+use App\Http\Resources\{{ model }} as Resources{{ model }};
+use App\Http\Resources\{{ model }}Collection;
 use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CategoryController extends Controller
+class {{ class }} extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,9 +23,9 @@ class CategoryController extends Controller
         try {
             Log::create([
                 'title' => 'successfully loaded',
-                'model' => 'Category',
-                'name' => 'Category Listing',
-                'url' => '/category/',
+                'model' => '{{ model }}',
+                'name' => '{{ model }} Listing',
+                'url' => '/',
                 'action' => 'listing',
             ]);
 
@@ -39,25 +39,23 @@ class CategoryController extends Controller
         }
 
         return response([
-            'categories' => new CategoryCollection(Category::root()->orderByDesc('id')->get())
+            '{{ modelVariable }}s' => new {{ model }}Collection({{ model }}::orderByDesc('id')->get())
         ], 200);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $request->validate([
-            'category_id' => ['nullable', 'exists:categories,id'],
-            'name' => ['required', 'string', 'max:255'],
-            'icon' => ['nullable', 'string', 'max:255'],
+            //
         ]);
 
-        $trashed = Category::onlyTrashed()->whereName($request->name)->first();
+        $trashed = {{ model }}::onlyTrashed()->whereName($request->name)->first();
 
         if ($trashed) {
             DB::beginTransaction();
@@ -67,7 +65,7 @@ class CategoryController extends Controller
 
                 Log::create([
                     'title' => 'successfully restored',
-                    'model' => 'Category',
+                    'model' => '{{ model }}',
                     'name' => $trashed->name,
                     'url' => '/category/' . $trashed->id . '/show',
                     'action' => 'create'
@@ -89,13 +87,13 @@ class CategoryController extends Controller
 
         DB::beginTransaction();
         try {
-            $category = Category::create($request->all());
+            ${{ modelVariable }} = {{ model }}::create($request->all());
 
             Log::create([
                 'title' => 'successfully created',
-                'model' => 'Category',
-                'name' => $category->name,
-                'url' => '/category/' . $category->id . '/show',
+                'model' => '{{ model }}',
+                'name' => ${{ modelVariable }}->name,
+                'url' => '/',
                 'action' => 'create'
             ]);
 
@@ -109,25 +107,25 @@ class CategoryController extends Controller
         }
 
         return response([
-            'message' => $category->name . ' successfully created.',
+            'message' => ${{ modelVariable }}->name . ' successfully created.',
         ], 201);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param Category $category
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
      * @return \Illuminate\Http\Response
      */
-    public function edit(Category $category)
+    public function edit({{ model }} ${{ modelVariable }})
     {
         DB::beginTransaction();
         try {
             Log::create([
                 'title' => 'successfully requested',
-                'model' => 'Category',
-                'name' => $category->name,
-                'url' => '/category/' . $category->id . '/show',
+                'model' => '{{ model }}',
+                'name' => ${{ modelVariable }}->name,
+                'url' => '/',
                 'action' => 'request'
             ]);
 
@@ -141,34 +139,32 @@ class CategoryController extends Controller
         }
 
         return response([
-            'category' => new ResourcesCategory($category),
+            '{{ modelVariable }}' => new Resources{{ model }}(${{ modelVariable }}),
         ], 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param Category $category
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, {{ model }} ${{ modelVariable }})
     {
         $request->validate([
-            'parent_id' => ['nullable', 'exists:categories,id'],
-            'name' => ['required', 'string', 'max:255'],
-            'icon' => ['nullable', 'string', 'max:255'],
+            //
         ]);
 
         DB::beginTransaction();
         try {
-            $category->update($request->all());
+            ${{ modelVariable }}->update($request->all());
 
             Log::create([
                 'title' => 'successfully updated',
-                'model' => 'Category',
-                'name' => $category->name,
-                'url' => '/category/' . $category->id . '/show',
+                'model' => '{{ model }}',
+                'name' => ${{ modelVariable }}->name,
+                'url' => '/',
                 'action' => 'update'
             ]);
 
@@ -182,28 +178,28 @@ class CategoryController extends Controller
         }
 
         return response([
-            'message' => $category->name . ' successfully updated.',
+            'message' => ${{ modelVariable }}->name . ' successfully updated.',
         ], 200);
     }
 
     /**
      * Toggle active the specified resource in storage.
      *
-     * @param Category $category
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
-    public function toggleActive(Category $category)
+    public function toggleActive({{ model }} ${{ modelVariable }})
     {
         DB::beginTransaction();
         try {
-            $category->toggleActive();
+            ${{ modelVariable }}->toggleActive();
 
             Log::create([
-                'title' => 'successfully ' . ($category->active ? 'activated' : 'inactivated'),
-                'model' => 'Category',
-                'name' => $category->name,
-                'url' => '/category/' . $category->id . '/show',
-                'action' => ($category->active ? 'active' : 'inactive')
+                'title' => 'successfully ' . (${{ modelVariable }}->active ? 'activated' : 'inactivated'),
+                'model' => '{{ model }}',
+                'name' => ${{ modelVariable }}->name,
+                'url' => '/',
+                'action' => (${{ modelVariable }}->active ? 'active' : 'inactive')
             ]);
 
             DB::commit();
@@ -216,30 +212,29 @@ class CategoryController extends Controller
         }
 
         return response([
-            'message' => $category->name . ' successfully ' . ($category->active ? 'activated' : 'inactivated') . '.',
+            'message' => ${{ modelVariable }}->name . ' successfully ' . (${{ modelVariable }}->active ? 'activated' : 'inactivated') . '.',
         ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param Category $category
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
      * @return \Illuminate\Http\Response
-     * @throws \Exception
      */
-    public function destroy(Category $category)
+    public function destroy({{ model }} ${{ modelVariable }})
     {
-        $name = $category->name;
+        $name =  ${{ modelVariable }}->name;
 
         DB::beginTransaction();
         try {
-            $category->delete();
+             ${{ modelVariable }}->delete();
 
             Log::create([
                 'title' => 'successfully deleted',
-                'model' => 'Category',
+                'model' => '{{ model }}',
                 'name' => $name,
-                'url' => '/category',
+                'url' => '/',
                 'action' => 'delete'
             ]);
 
@@ -251,7 +246,6 @@ class CategoryController extends Controller
                 'message' => $exception->getMessage(),
             ], 500);
         }
-
 
         return response([
             'message' => $name . ' successfully deleted.',
@@ -267,18 +261,18 @@ class CategoryController extends Controller
     public function destroyMany(Request $request)
     {
         $request->validate([
-            'categories.*' => ['required', 'exists:categories,id'],
+            '{{ modelVariable }}s.*' => ['required', 'exists:{{ modelVariable }}s,id'],
         ]);
 
         DB::beginTransaction();
         try {
-            Category::destroy($request->categories);
+            {{ model }}::destroy($request->{{ modelVariable }}s);
 
             Log::create([
                 'title' => 'successfully deleted',
-                'model' => 'Category',
+                'model' => '{{ model }}',
                 'name' => 'Bulk Delete',
-                'url' => '/category',
+                'url' => '/',
                 'action' => 'delete'
             ]);
 
@@ -291,9 +285,8 @@ class CategoryController extends Controller
             ], 500);
         }
 
-
         return response([
-            'message' => 'Categories successfully deleted.',
+            'message' => '{{ modelVariable }}s successfully deleted.',
         ], 204);
     }
 }
