@@ -54,10 +54,8 @@ class AttributeController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'type' => ['nullable', 'in:text,number,image'],
-            'categories' => ['nullable', 'array', 'min:1'],
-            'categories.*.id' => ['nullable', 'exists:categories,id'],
-            'units' => ['nullable', 'array', 'min:1'],
-            'units.*.id' => ['nullable', 'exists:units,id'],
+            'categories.*' => ['required', 'exists:categories,id'],
+            'units.*' => ['nullable', 'exists:units,id'],
         ]);
 
         $trashed = Attribute::onlyTrashed()->whereName($request->name)->first();
@@ -164,10 +162,8 @@ class AttributeController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'type' => ['nullable', 'in:text,number,image'],
-            'categories' => ['nullable', 'array', 'min:1'],
-            'categories.*.id' => ['nullable', 'exists:categories,id'],
-            'units' => ['nullable', 'array', 'min:1'],
-            'units.*.id' => ['nullable', 'exists:units,id'],
+            'categories.*' => ['nullable', 'exists:categories,id'],
+            'units.*' => ['nullable', 'exists:units,id'],
         ]);
 
         DB::beginTransaction();
@@ -282,7 +278,7 @@ class AttributeController extends Controller
 
         DB::beginTransaction();
         try {
-            Attribute::destroy($request->attributes);
+            Attribute::destroy($request->get('attributes'));
 
             Log::create([
                 'title' => 'successfully deleted',

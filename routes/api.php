@@ -12,6 +12,9 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('modules', 'ModuleController@index');
 
+    /*
+     * Category Apis
+     * */
     Route::get('categories', 'CategoryController@index');
     Route::post('category/create', 'CategoryController@store');
     Route::get('category/{category}/edit', 'CategoryController@edit');
@@ -31,6 +34,9 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('unit/{unit}/delete', 'UnitController@destroy');
     Route::delete('units/delete', 'UnitController@destroyMany');
 
+    /*
+     * Attribute Apis
+     * */
     Route::get('attributes', 'AttributeController@index');
     Route::post('attribute/create', 'AttributeController@store');
     Route::get('attribute/{attribute}/edit', 'AttributeController@edit');

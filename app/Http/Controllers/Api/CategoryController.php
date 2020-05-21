@@ -160,6 +160,10 @@ class CategoryController extends Controller
             'icon' => ['nullable', 'string', 'max:255'],
         ]);
 
+        if (!$request->parent_id) {
+            $request['parent_id'] = null;
+        }
+
         DB::beginTransaction();
         try {
             $category->update($request->all());
