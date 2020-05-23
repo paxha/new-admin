@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Attribute as ResourcesAttribute;
-use App\Http\Resources\AttributeCollection;
-use App\Models\Attribute;
+use App\Http\Resources\Brand as ResourcesBrand;
+use App\Http\Resources\BrandCollection;
+use App\Models\Brand;
 use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class AttributeController extends Controller
+class BrandController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,8 +23,8 @@ class AttributeController extends Controller
         try {
             Log::create([
                 'title' => 'successfully loaded',
-                'model' => 'Attribute',
-                'name' => 'Attribute Listing',
+                'model' => 'Brand',
+                'name' => 'Brand Listing',
                 'url' => '/',
                 'action' => 'listing',
             ]);
@@ -39,7 +39,7 @@ class AttributeController extends Controller
         }
 
         return response([
-            'attributes' => new AttributeCollection(Attribute::orderByDesc('id')->get())
+            'brands' => new BrandCollection(Brand::orderByDesc('id')->get())
         ], 200);
     }
 
@@ -53,26 +53,28 @@ class AttributeController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'type' => ['nullable', 'in:text,number,image'],
-            'categories.*' => ['required', 'exists:categories,id'],
-            'units.*' => ['nullable', 'exists:units,id'],
+            'description' => ['nullable', 'string'],
+            'iso2' => ['nullable', 'string', 'max:2'],
+            'logo' => ['nullable', 'string', 'max:191'],
+            'cover' => ['nullable', 'string', 'max:191'],
+            'meta_title' => ['nullable', 'string'],
+            'meta_keywords' => ['nullable', 'string'],
+            'meta_description' => ['nullable', 'string'],
         ]);
 
-        $trashed = Attribute::onlyTrashed()->whereName($request->name)->first();
+        $trashed = Brand::onlyTrashed()->whereName($request->name)->first();
 
         if ($trashed) {
             DB::beginTransaction();
             try {
                 $trashed->restore();
                 $trashed->update($request->all());
-                $trashed->categories()->sync($request->categories);
-                $trashed->units()->sync($request->units);
 
                 Log::create([
                     'title' => 'successfully restored',
-                    'model' => 'Attribute',
+                    'model' => 'Brand',
                     'name' => $trashed->name,
-                    'url' => '/attribute/' . $trashed->id . '/show',
+                    'url' => '/brand/' . $trashed->id . '/show',
                     'action' => 'create'
                 ]);
 
@@ -92,14 +94,12 @@ class AttributeController extends Controller
 
         DB::beginTransaction();
         try {
-            $attribute = Attribute::create($request->all());
-            $attribute->categories()->sync($request->categories);
-            $attribute->units()->sync($request->units);
+            $brand = Brand::create($request->all());
 
             Log::create([
                 'title' => 'successfully created',
-                'model' => 'Attribute',
-                'name' => $attribute->name,
+                'model' => 'Brand',
+                'name' => $brand->name,
                 'url' => '/',
                 'action' => 'create'
             ]);
@@ -114,24 +114,24 @@ class AttributeController extends Controller
         }
 
         return response([
-            'message' => $attribute->name . ' successfully created.',
+            'message' => $brand->name . ' successfully created.',
         ], 201);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Attribute $attribute
+     * @param \App\Models\Brand $brand
      * @return \Illuminate\Http\Response
      */
-    public function edit(Attribute $attribute)
+    public function edit(Brand $brand)
     {
         DB::beginTransaction();
         try {
             Log::create([
                 'title' => 'successfully requested',
-                'model' => 'Attribute',
-                'name' => $attribute->name,
+                'model' => 'Brand',
+                'name' => $brand->name,
                 'url' => '/',
                 'action' => 'request'
             ]);
@@ -146,7 +146,7 @@ class AttributeController extends Controller
         }
 
         return response([
-            'attribute' => new ResourcesAttribute($attribute),
+            'brand' => new ResourcesBrand($brand),
         ], 200);
     }
 
@@ -154,28 +154,30 @@ class AttributeController extends Controller
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Attribute $attribute
+     * @param \App\Models\Brand $brand
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Attribute $attribute)
+    public function update(Request $request, Brand $brand)
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'type' => ['nullable', 'in:text,number,image'],
-            'categories.*' => ['nullable', 'exists:categories,id'],
-            'units.*' => ['nullable', 'exists:units,id'],
+            'description' => ['nullable', 'string'],
+            'iso2' => ['nullable', 'string', 'max:2'],
+            'logo' => ['nullable', 'string', 'max:191'],
+            'cover' => ['nullable', 'string', 'max:191'],
+            'meta_title' => ['nullable', 'string'],
+            'meta_keywords' => ['nullable', 'string'],
+            'meta_description' => ['nullable', 'string'],
         ]);
 
         DB::beginTransaction();
         try {
-            $attribute->update($request->all());
-            $attribute->categories()->sync($request->categories);
-            $attribute->units()->sync($request->units);
+            $brand->update($request->all());
 
             Log::create([
                 'title' => 'successfully updated',
-                'model' => 'Attribute',
-                'name' => $attribute->name,
+                'model' => 'Brand',
+                'name' => $brand->name,
                 'url' => '/',
                 'action' => 'update'
             ]);
@@ -190,28 +192,28 @@ class AttributeController extends Controller
         }
 
         return response([
-            'message' => $attribute->name . ' successfully updated.',
+            'message' => $brand->name . ' successfully updated.',
         ], 200);
     }
 
     /**
-     * Toggle active the specified resource in storage.
+     * Toggle popular the specified resource in storage.
      *
-     * @param \App\Models\Attribute $attribute
+     * @param \App\Models\Brand $brand
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
-    public function toggleActive(Attribute $attribute)
+    public function togglePopular(Brand $brand)
     {
         DB::beginTransaction();
         try {
-            $attribute->toggleActive();
+            $brand->togglePopular();
 
             Log::create([
-                'title' => 'successfully ' . ($attribute->active ? 'activated' : 'inactivated'),
-                'model' => 'Attribute',
-                'name' => $attribute->name,
+                'title' => 'successfully ' . ($brand->popular ? 'marked popular' : 'marked unpopular'),
+                'model' => 'Brand',
+                'name' => $brand->name,
                 'url' => '/',
-                'action' => ($attribute->active ? 'active' : 'inactive')
+                'action' => ($brand->popular ? 'popular' : 'unpopular')
             ]);
 
             DB::commit();
@@ -224,27 +226,61 @@ class AttributeController extends Controller
         }
 
         return response([
-            'message' => $attribute->name . ' successfully ' . ($attribute->active ? 'activated' : 'inactivated') . '.',
+            'message' => $brand->name . ' successfully ' . ($brand->popular ? 'marked popular' : 'marked unpopular') . '.',
+        ], 200);
+    }
+
+    /**
+     * Toggle active the specified resource in storage.
+     *
+     * @param \App\Models\Brand $brand
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     */
+    public function toggleActive(Brand $brand)
+    {
+        DB::beginTransaction();
+        try {
+            $brand->toggleActive();
+
+            Log::create([
+                'title' => 'successfully ' . ($brand->active ? 'activated' : 'inactivated'),
+                'model' => 'Brand',
+                'name' => $brand->name,
+                'url' => '/',
+                'action' => ($brand->active ? 'active' : 'inactive')
+            ]);
+
+            DB::commit();
+        } catch (\Exception $exception) {
+            DB::rollBack();
+
+            return response([
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+
+        return response([
+            'message' => $brand->name . ' successfully ' . ($brand->active ? 'activated' : 'inactivated') . '.',
         ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\Attribute $attribute
+     * @param \App\Models\Brand $brand
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Attribute $attribute)
+    public function destroy(Brand $brand)
     {
-        $name = $attribute->name;
+        $name = $brand->name;
 
         DB::beginTransaction();
         try {
-            $attribute->delete();
+            $brand->delete();
 
             Log::create([
                 'title' => 'successfully deleted',
-                'model' => 'Attribute',
+                'model' => 'Brand',
                 'name' => $name,
                 'url' => '/',
                 'action' => 'delete'
@@ -273,16 +309,16 @@ class AttributeController extends Controller
     public function destroyMany(Request $request)
     {
         $request->validate([
-            'attributes.*' => ['required', 'exists:attributes,id'],
+            'brands.*' => ['required', 'exists:brands,id'],
         ]);
 
         DB::beginTransaction();
         try {
-            Attribute::destroy($request->get('attributes'));
+            Brand::destroy($request->brands);
 
             Log::create([
                 'title' => 'successfully deleted',
-                'model' => 'Attribute',
+                'model' => 'Brand',
                 'name' => 'Bulk Delete',
                 'url' => '/',
                 'action' => 'delete'
@@ -298,7 +334,7 @@ class AttributeController extends Controller
         }
 
         return response([
-            'message' => 'attributes successfully deleted.',
+            'message' => 'brands successfully deleted.',
         ], 204);
     }
 }

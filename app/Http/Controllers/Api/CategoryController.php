@@ -55,6 +55,9 @@ class CategoryController extends Controller
             'category_id' => ['nullable', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'icon' => ['nullable', 'string', 'max:255'],
+            'meta_title' => ['nullable', 'string'],
+            'meta_keywords' => ['nullable', 'string'],
+            'meta_description' => ['nullable', 'string'],
         ]);
 
         $trashed = Category::onlyTrashed()->whereName($request->name)->first();
@@ -158,6 +161,9 @@ class CategoryController extends Controller
             'parent_id' => ['nullable', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'icon' => ['nullable', 'string', 'max:255'],
+            'meta_title' => ['nullable', 'string'],
+            'meta_keywords' => ['nullable', 'string'],
+            'meta_description' => ['nullable', 'string'],
         ]);
 
         if (!$request->parent_id) {

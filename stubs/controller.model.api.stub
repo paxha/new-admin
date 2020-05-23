@@ -67,7 +67,7 @@ class {{ class }} extends Controller
                     'title' => 'successfully restored',
                     'model' => '{{ model }}',
                     'name' => $trashed->name,
-                    'url' => '/category/' . $trashed->id . '/show',
+                    'url' => '/{{ modelVariable }}/' . $trashed->id . '/show',
                     'action' => 'create'
                 ]);
 

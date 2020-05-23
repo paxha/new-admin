@@ -12,7 +12,7 @@ class Attribute extends Model
     use Activable, SoftDeletes, Loggable;
 
     protected $fillable = [
-        'name',
+        'name', 'type',
     ];
 
     protected $guarded = [

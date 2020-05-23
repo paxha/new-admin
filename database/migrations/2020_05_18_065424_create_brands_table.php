@@ -17,11 +17,16 @@ class CreateBrandsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->string('iso2')->unique();
+            $table->text('description')->nullable();
+            $table->string('iso2', 2)->nullable();
             $table->string('logo')->nullable();
             $table->string('cover')->nullable();
             $table->boolean('popular')->default(false);
             $table->boolean('active')->default(true);
+
+            $table->text('meta_title')->nullable();
+            $table->text('meta_keywords')->nullable();
+            $table->text('meta_description')->nullable();
 
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

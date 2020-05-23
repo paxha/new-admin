@@ -18,6 +18,7 @@ class Attribute extends JsonResource
             'id' => $this->id,
             'key' => $this->id,
             'name' => $this->name,
+            'type' => $this->type,
             'active' => $this->active,
             'created_at' => $this->created_at->diffForHumans(),
             'updated_at' => $this->updated_at->diffForHumans(),

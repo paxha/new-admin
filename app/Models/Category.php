@@ -14,7 +14,7 @@ class Category extends Model
     use Sluggable, Activable, HasRecursiveRelationships, SoftDeletes, Loggable;
 
     protected $fillable = [
-        'parent_id', 'name', 'icon'
+        'parent_id', 'name', 'icon', 'meta_title', 'meta_keywords', 'meta_description',
     ];
 
     protected $guarded = [

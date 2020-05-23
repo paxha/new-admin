@@ -7,6 +7,9 @@ Route::post('login', 'UserController@login');
 
 Route::get('logout', 'UserController@logout');
 
+Route::post('upload-image', 'ImageController@upload');
+Route::post('remove-image', 'ImageController@remove');
+
 Route::middleware('auth:api')->group(function () {
     Route::get('user', 'UserController@user');
 
@@ -44,4 +47,16 @@ Route::middleware('auth:api')->group(function () {
     Route::get('attribute/{attribute}/toggle-active', 'AttributeController@toggleActive');
     Route::delete('attribute/{attribute}/delete', 'AttributeController@destroy');
     Route::delete('attributes/delete', 'AttributeController@destroyMany');
+
+    /*
+     * Attribute Apis
+     * */
+    Route::get('brands', 'BrandController@index');
+    Route::post('brand/create', 'BrandController@store');
+    Route::get('brand/{brand}/edit', 'BrandController@edit');
+    Route::put('brand/{brand}/update', 'BrandController@update');
+    Route::get('brand/{brand}/toggle-popular', 'BrandController@togglePopular');
+    Route::get('brand/{brand}/toggle-active', 'BrandController@toggleActive');
+    Route::delete('brand/{brand}/delete', 'BrandController@destroy');
+    Route::delete('brands/delete', 'BrandController@destroyMany');
 });

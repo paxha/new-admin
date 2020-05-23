@@ -21,6 +21,10 @@ class CreateCategoriesTable extends Migration
             $table->string('icon')->nullable();
             $table->boolean('active')->default(true);
 
+            $table->text('meta_title')->nullable();
+            $table->text('meta_keywords')->nullable();
+            $table->text('meta_description')->nullable();
+
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();

@@ -67,7 +67,7 @@ class UnitController extends Controller
                     'title' => 'successfully restored',
                     'model' => 'Unit',
                     'name' => $trashed->name,
-                    'url' => '/category/' . $trashed->id . '/show',
+                    'url' => '/unit/' . $trashed->id . '/show',
                     'action' => 'create'
                 ]);
 
