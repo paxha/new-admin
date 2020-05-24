@@ -2,13 +2,17 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Models\Category;
 use App\Models\User;
+use App\Models\Variation;
 use Faker\Generator as Faker;
 
-$factory->define(Category::class, function (Faker $faker) {
+$factory->define(Variation::class, function (Faker $faker) {
     return [
-        'name' => $faker->word,
+        'slug' => $faker->slug(6),
+        'sku' => $faker->md5,
+        'description' => $faker->realText(200),
+        'price' => $faker->numberBetween(100, 1000),
+        'continue' => $faker->boolean,
         'active' => $faker->boolean,
         'created_at' => $faker->dateTime,
         'created_by' => User::all()->random()->id,

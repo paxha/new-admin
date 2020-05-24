@@ -23,6 +23,10 @@ class CreateVariationsTable extends Migration
             $table->boolean('continue')->default(true);
             $table->boolean('active')->default(true);
 
+            $table->text('meta_title')->nullable();
+            $table->text('meta_keywords')->nullable();
+            $table->text('meta_description')->nullable();
+
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->unsignedBigInteger('deleted_by')->nullable();

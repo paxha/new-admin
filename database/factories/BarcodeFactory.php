@@ -2,13 +2,14 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Models\Category;
+use App\Models\Barcode;
 use App\Models\User;
 use Faker\Generator as Faker;
 
-$factory->define(Category::class, function (Faker $faker) {
+$factory->define(Barcode::class, function (Faker $faker) {
     return [
-        'name' => $faker->word,
+        'barcode' => $faker->md5,
+        'price' => $faker->numberBetween(100, 1000),
         'active' => $faker->boolean,
         'created_at' => $faker->dateTime,
         'created_by' => User::all()->random()->id,

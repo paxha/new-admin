@@ -59,4 +59,16 @@ Route::middleware('auth:api')->group(function () {
     Route::get('brand/{brand}/toggle-active', 'BrandController@toggleActive');
     Route::delete('brand/{brand}/delete', 'BrandController@destroy');
     Route::delete('brands/delete', 'BrandController@destroyMany');
+
+    /*
+     * Variation Apis
+     * */
+    Route::get('variations', 'VariationController@index');
+    Route::post('variation/create', 'VariationController@store');
+    Route::get('variation/{variation}/edit', 'VariationController@edit');
+    Route::put('variation/{variation}/update', 'VariationController@update');
+    Route::get('variation/{variation}/toggle-continue', 'VariationController@toggleContinue');
+    Route::get('variation/{variation}/toggle-active', 'VariationController@toggleActive');
+    Route::delete('variation/{variation}/delete', 'VariationController@destroy');
+    Route::delete('variations/delete', 'VariationController@destroyMany');
 });
